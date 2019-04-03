@@ -1,0 +1,68 @@
+package main
+
+import (
+	"fmt"
+)
+
+func getCount(items map[int]int, products map[int]int, res *int) {
+	match := true
+	for k, v := range items {
+		if count, ok := products[k]; ok {
+			if count >= v {
+				continue
+			} else {
+				match = false
+				break
+			}
+		} else {
+			match = false
+			break
+		}
+	}
+
+	if match {
+		(*res)++
+		for k, v := range items {
+			products[k] -= v
+		}
+		getCount(items, products, res)
+	}
+}
+
+func combination(productPackage map[int]map[int]int, products map[int]int) map[int]int {
+	combined := make(map[int]int)
+	for packageKey, items := range productPackage {
+		count := 0
+		getCount(items, products, &count)
+		if count > 0 {
+			combined[packageKey] = count
+		}
+	}
+
+	for k, v := range products {
+		if v > 0 {
+			combined[k] = v
+		}
+	}
+	return combined
+}
+
+func main() {
+
+	productPackage := map[int]map[int]int{
+		99990001: {
+			23520: 2,
+			27499: 2,
+			25939: 2,
+		},
+	}
+
+	products := map[int]int{
+		23684: 1,
+		23520: 3,
+		27499: 2,
+		25939: 4,
+	}
+
+	fmt.Println(combination(productPackage, products))
+}
